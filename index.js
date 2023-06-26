@@ -16,7 +16,7 @@ client.on("ready", () => {
 	console.log("server is running")
 })
 
-client.on("message", async (message) => {
+client.on("message_create", async (message) => {
 	// Return if a message is not an actual chat but a status
 	if (message.from === "status@broadcast") return
 
@@ -28,11 +28,20 @@ client.on("message", async (message) => {
 
 	let result = ""
 	
-	// check if a participant of the group promts the bot with "/everyone"
+	// check if a participant of the group prompts the bot with "/everyone"
 	if (message.body === "/everyone") {
 		// Get a list of members in the group chat
 		const participants = await chat.participants
+		let partic = {}
 
+		// check if the sender is an Admin
+		for (const participant of participants){
+			if (participant.id._serialized === message._data.id.participant){
+				partic = participant
+				break
+			}
+		}
+		if(!partic.isAdmin) return
 		let contacts = []
 		// get the contact details of each participant 
 		for (const participant of participants) {
